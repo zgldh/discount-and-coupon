@@ -1,0 +1,13 @@
+{
+    "name": "zgldh/discount-and-coupon",
+    "description": "The core logic about discount and coupon. Useful to manage discount campaign, defining coupon and calculate the final price.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "zgldh",
+            "email": "zgldh@hotmail.com"
+        }
+    ],
+    "require": {}
+}
