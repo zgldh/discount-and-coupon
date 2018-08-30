@@ -3,11 +3,31 @@
     "description": "The core logic about discount and coupon. Useful to manage discount campaign, defining coupon and calculate the final price.",
     "type": "library",
     "license": "MIT",
+    "keywords":
+    [
+        "discount",
+        "coupon"
+    ],
     "authors": [
         {
             "name": "zgldh",
             "email": "zgldh@hotmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2|^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "zgldh\\DiscountAndCoupon\\": "src"
+        }
+    },
+    "autoload-dev": {
+      "psr-4": {
+        "zgldh\\DiscountAndCoupon\\Test\\": "tests"
+      }
+    }
 }
