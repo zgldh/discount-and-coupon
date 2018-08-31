@@ -8,6 +8,10 @@
 
 namespace zgldh\DiscountAndCoupon;
 
+use zgldh\DiscountAndCoupon\Coupons\Coupon;
+use zgldh\DiscountAndCoupon\Coupons\CouponCollection;
+use zgldh\DiscountAndCoupon\Discounts\Discount;
+use zgldh\DiscountAndCoupon\Discounts\DiscountCollection;
 
 class Calculator
 {

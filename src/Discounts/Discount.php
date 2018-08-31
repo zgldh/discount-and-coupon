@@ -6,10 +6,10 @@
  * Time: 17:20
  */
 
-namespace zgldh\DiscountAndCoupon;
+namespace zgldh\DiscountAndCoupon\Discounts;
 
 
-class Coupon
+class Discount
 {
 
 }

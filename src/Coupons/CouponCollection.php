@@ -6,7 +6,7 @@
  * Time: 17:36
  */
 
-namespace zgldh\DiscountAndCoupon;
+namespace zgldh\DiscountAndCoupon\Coupons;
 
 
 class CouponCollection
