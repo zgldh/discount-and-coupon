@@ -23,6 +23,10 @@ class Calculator
      * @var CouponCollection
      */
     private $coupons = null;
+    /**
+     * @var []
+     */
+    private $products = null;
 
     public function __construct()
     {
@@ -106,5 +110,20 @@ class Calculator
     public function getCoupons(): CouponCollection
     {
         return $this->coupons;
+    }
+
+    public function setProducts($products): Calculator
+    {
+        $this->products = $products;
+        return $this;
+    }
+
+    /**
+     * TODO Calculate and get Result
+     * @return Result
+     */
+    public function calculate(): Result
+    {
+
     }
 }

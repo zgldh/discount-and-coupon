@@ -9,7 +9,9 @@
 namespace zgldh\DiscountAndCoupon\Coupons;
 
 
-class Coupon
+use zgldh\DiscountAndCoupon\Benefit;
+
+class Coupon extends Benefit
 {
 
 }
