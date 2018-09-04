@@ -56,7 +56,7 @@
 
 ### 如何定义 discount
 
-比如我们想定义店铺的“满减活动”：
+#### 1. 定义店铺的“满减活动”：
 ```
 use zgldh\DiscountAndCoupon\Discounts\Discount;
 
@@ -65,17 +65,15 @@ class FlatDiscountWhenPurchaseAbove extends Discount{
     private $deduction = null;  // 减多少钱
 
     private $priority = 100;    // 默认优先级
-    private $group = self::class;
 
-    public function beforeApply($product, $products, $fullPrice, $currentFullPrice){
-        return $currentFullPrice >= $this->above;
+    public function isScopeQualified($scopeProducts, $scopeTotalPrice)
+    {
+        return $scopeTotalPrice >= $this->above;
     }
 
-    public function apply($product, $products, $fullPrice, $currentFullPrice){
-        return $this->updatePrice($currentFullPrice - $this->deduction);
-    }
-
-    public function afterApplied($product, $products, $fullPrice, $currentFullPrice){
+    public function newScopePrice($scopeProducts, $scopeTotalPrice)
+    {
+        return $scopeTotalPrice - $this->deduction;
     }
 }
 
@@ -85,5 +83,33 @@ $d2a20 = new FlatDiscountWhenPurchaseAbove(['above'=>20,'deduction'=>2,'priority
 $d10a50 = new FlatDiscountWhenPurchaseAbove(['above'=>50,'deduction'=>10,'priority'=>102]);
 // 满100减30
 $d30a100 = new FlatDiscountWhenPurchaseAbove(['above'=>100,'deduction'=>30,'priority'=>103]);
+```
 
+上面我们定义了 `FlatDiscountWhenPurchaseAbove` 类，用于描述“满减”这一类活动。
+
+然后我们新建了 3 个该类的对象，分别代表满20减2, 满50减10, 满100减30 这三种活动。
+
+注意 `priority` 属性， 它决定了 `Calculator` 在尝试应用折扣时的判断顺序。由于默认以上三种活动同属于“满减”活动，且只能应用其中一种(请参考 `Benefit` 类的源码中对 `$group` 的说明)。所以我们让优惠额度最大的优先级最高，以便总是能帮客户享用最大的优惠力度。
+
+#### 2. 定义店铺的“迎中秋早餐8折”活动，不与其他活动同享：
+
+```
+use zgldh\DiscountAndCoupon\Discounts\Discount;
+
+const CATEGORY_BREAKFAST = 'breakfast';
+
+class MidAutumnDayBreakfast80Discount extends Discount{
+    private $priority = 200;    // 优先级
+
+    private $exclusive = true;  // 不与其他活动同享
+
+    public function scope($product){
+        return $product->category = CATEGORY_BREAKFAST;
+    }
+
+    public function newScopePrice($scopeProducts, $scopeTotalPrice)
+    {
+        return $scopeTotalPrice * 0.8;
+    }
+}
 ```
