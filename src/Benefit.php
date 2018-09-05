@@ -36,6 +36,16 @@ class Benefit
      */
     protected $groupMaxApplyTime = 1;
 
+    /**
+     * @var Calculator
+     */
+    private $calculator = null;
+
+    public function __construct(Calculator $calculator)
+    {
+        $this->calculator = $calculator;
+    }
+
     public function getGroup()
     {
         if ($this->group === null) {
@@ -66,6 +76,17 @@ class Benefit
     public function isScopeQualified($scopeProducts, $scopeTotalPrice)
     {
         return true;
+    }
+
+    /**
+     * 返回改变过的 scope 商品集合。 用于某些会增加、删除、修改商品的权益。
+     * @param $scopeProductions
+     * @param $scopeTotalPrice
+     * @return mixed
+     */
+    public function newScopeProductions($scopeProductions, $scopeTotalPrice)
+    {
+        return $scopeProductions;
     }
 
     /**

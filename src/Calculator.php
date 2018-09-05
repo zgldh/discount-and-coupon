@@ -28,6 +28,12 @@ class Calculator
      */
     private $products = null;
 
+    /**
+     * Other parameters
+     * @var array
+     */
+    private $parameters = [];
+
     public function __construct()
     {
         $this->discounts = new DiscountCollection();
@@ -116,6 +122,27 @@ class Calculator
     {
         $this->products = $products;
         return $this;
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return Calculator
+     */
+    public function setParameter($name, $value): Calculator
+    {
+        $this->parameters[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * @param $name
+     * @param null $default
+     * @return mixed|null
+     */
+    public function getParameter($name, $default = null)
+    {
+        return isset($this->parameters[$name]) ? $this->parameters[$name] : $default;
     }
 
     /**

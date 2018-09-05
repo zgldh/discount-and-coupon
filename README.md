@@ -29,7 +29,7 @@
                 'sku'       => 123,         // 货物 SKU 或 ID   必填
                 'price'     => 2.80         // 货物原价         必填
                 'category'  => 456,         // 货物分类 ID      可选。如不填写，无法参与针对分类的活动。
-                'name'      => 'Coca Cola'  // 货物名           可选
+                'name'      => 'Coke Cola'  // 货物名           可选
                 'foo'       => 'bar'        // 其他参数         可选
             ],
             ... // more products
@@ -41,7 +41,7 @@
     $result->benefit;                       // final_price 减去 price
     $result->discounts;                     // 实际应用的 discounts， 内含每个 discount 提供了多少 benefit。
     $result->coupons;                       // 实际应用的 coupons， 内含每个 coupon 提供了多少 benefit。
-    foreach($result->products as $product)     // 所有享受到权益的货物数组，每个元素对应一个货物
+    foreach($result->products as $product)    // 所有享受到权益的货物数组，每个元素对应一个货物
     {
         $product->sku;                        // 该货物 SKU
         $product->price;                      // 货物原价
@@ -54,7 +54,7 @@
 
 ```
 
-### 如何定义 discount
+### 如何定义店铺折扣活动 Discount
 
 #### 1. 定义店铺的“满减活动”：
 ```
@@ -104,7 +104,7 @@ class MidAutumnDayBreakfast80Discount extends Discount{
     private $exclusive = true;  // 不与其他活动同享
 
     public function scope($product){
-        return $product->category = CATEGORY_BREAKFAST;
+        return $product->category === CATEGORY_BREAKFAST;
     }
 
     public function newScopePrice($scopeProducts, $scopeTotalPrice)
@@ -112,4 +112,138 @@ class MidAutumnDayBreakfast80Discount extends Discount{
         return $scopeTotalPrice * 0.8;
     }
 }
+
+$midAutumnDayDiscountEvent = new MidAutumnDayBreakfast80Discount();
 ```
+
+#### 3. 定义“新品促销，XX酸奶买一送一” 活动，不与其他活动同享。
+
+下列代码是以减价实现本促销活动，会影响本次订单最终价格。
+
+```
+use zgldh\DiscountAndCoupon\Discounts\Discount;
+
+const SKU_YOGURT = 'yogurt';
+
+class YogurtBuyOneGetOne extends Discount{
+    private $priority = 500;    // 优先级
+
+    private $exclusive = true;  // 不与其他活动同享
+
+    public function scope($product){
+        return $product->sku === SKU_YOGURT;
+    }
+
+    public function newScopePrice($scopeProducts, $scopeTotalPrice)
+    {
+        $productsCount = count($scopeProducts);
+        $fairCount = ceil($productsCount / 2);
+        $fairProductPrice = $scopeTotalPrice / $productsCount;
+        return $fairProductPrice * $fairCount;
+    }
+}
+
+$yogurtPromotion = new YogurtBuyOneGetOne();
+```
+
+下列代码是以赠送货品实现促销活动，不会影响本次订单最终价格，但会增加商品。
+
+```
+use zgldh\DiscountAndCoupon\Discounts\Discount;
+
+const SKU_YOGURT = 'yogurt';
+
+class YogurtBuyOneGetOne extends Discount{
+    private $priority = 500;    // 优先级
+
+    private $exclusive = true;  // 不与其他活动同享
+
+    public function scope($product){
+        return $product->sku === SKU_YOGURT;
+    }
+
+    public function newScopeProductions($scopeProductions, $scopeTotalPrice)
+    {
+        $count = count($scopeProducts);
+        for($i = 0; $i<$count; $i++)
+        {
+            push($scopeProducts, [
+                'sku'=> SKU_YOGURT,
+                'price'=>0
+            ]);
+        }
+        return $scopeProductions;
+    }
+}
+
+$yogurtPromotion = new YogurtBuyOneGetOne();
+```
+
+### 如何定义优惠券 Coupon
+
+#### 1. 定义代金券
+
+```
+use zgldh\DiscountAndCoupon\Coupons\Coupon;
+
+class FlatDeduction extends Coupon{
+    private $priority = 0;    // 优先级
+
+    private $deduction = 0;
+    private $couponId = null;
+
+    public function newScopePrice($scopeProducts, $scopeTotalPrice)
+    {
+        return $scopeTotalPrice - $this->deduction;
+    }
+
+    public function onApplied($scopeProducts)
+    {
+        // 如果这个 coupon 只能用一次，则删除这个 coupon 记录
+        // 如 DB::table('coupons')->where('id',$this->couponId)->delete();
+        // 或者修改 coupon 记录的剩余使用次数等等
+    }
+}
+
+$flatDeduction10= new FlatDeduction([ 'deduction'=>10, 'coupon_id'=>123 ]); // 10元代金券
+$flatDeduction20= new FlatDeduction([ 'deduction'=>20, 'coupon_id'=>124 ]); // 20元代金券
+$flatDeduction50= new FlatDeduction([ 'deduction'=>50, 'coupon_id'=>125 ]); // 50元代金券
+```
+
+#### 2. 定义 “饮料升级优惠券”
+
+能把订单内的某种饮料的一件商品替换成更贵的饮料。 本质是替换商品，所以你可以任意定义规则。
+
+```
+use zgldh\DiscountAndCoupon\Coupons\Coupon;
+
+const SMALL_COKE = 'small-coke';
+const BIG_COKE = 'big-coke';
+
+class UpgradeBeverage extends Coupon{
+    private $priority = 500;    // 优先级
+
+    public function scope($product){
+        return $product->sku === SMALL_COKE;
+    }
+
+    public function newScopeProductions($scopeProductions, $scopeTotalPrice)
+    {
+        $firstCoke = $scopeProductions[0];
+        if($firstCoke)
+        {
+            $firstCoke['sku'] = BIG_COKE;
+            $firstCoke['name'] = 'Big Coke';
+        }
+        return $scopeProductions;
+    }
+
+    public function onApplied($scopeProducts)
+    {
+        // 如果这个 coupon 只能用一次，则删除这个 coupon 记录
+        // 如 DB::table('coupons')->where('id',$this->couponId)->delete();
+        // 或者修改 coupon 记录的剩余使用次数等等
+    }
+}
+```
+
