@@ -110,4 +110,31 @@ class Benefit
     {
 
     }
+
+    /**
+     * 当前 Benefit 比传入的 Benefit 更优先
+     * @param Benefit $benefit
+     * @return bool
+     */
+    public function isPriorThan(Benefit $benefit)
+    {
+        return $this->priority > $benefit->priority;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    /**
+     * 尝试将本权益应用在商品集合 $products 上
+     * @param $products
+     */
+    public function attempt($products)
+    {
+        return $products;
+    }
 }

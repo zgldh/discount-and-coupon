@@ -9,7 +9,7 @@
 namespace zgldh\DiscountAndCoupon\Discounts;
 
 
-class DiscountCollection
+class DiscountCollection extends \ArrayObject
 {
 
     public function appendDiscount(Discount $discount)

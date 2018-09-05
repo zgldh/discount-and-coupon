@@ -151,6 +151,39 @@ class Calculator
      */
     public function calculate(): Result
     {
+        $benefits = $this->getBenefits();
+        /** @var Benefit $benefit */
+        foreach ($benefits as $benefit) {
+            $this->products = $benefit->attempt($this->products);
+        }
+        return $this->getResult();
+    }
 
+    private function getResult()
+    {
+        $result = new Result();
+        return $result;
+    }
+
+    /**
+     * 得到 Discounts 和 Coupon 的合集
+     * 并且 priority 大的，排在最前面
+     * @return array
+     */
+    private function getBenefits()
+    {
+        $benefits = [];
+        foreach ($this->discounts as $discount) {
+            $benefits[] = $discount;
+        }
+        foreach ($this->coupons as $coupon) {
+            $benefits[] = $coupon;
+        }
+        usort($benefits, function ($a, $b) {
+            $priorityA = $a->getPriority();
+            $priorityB = $b->getPriority();
+            return $priorityB - $priorityA;
+        });
+        return $benefits;
     }
 }
