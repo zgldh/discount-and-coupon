@@ -36,14 +36,14 @@ class Benefit
      */
     protected $groupMaxApplyTime = 1;
 
-    /**
-     * @var Calculator
-     */
-    private $calculator = null;
 
-    public function __construct(Calculator $calculator)
+    public function __construct($parameters = [])
     {
-        $this->calculator = $calculator;
+        foreach ($parameters as $key => $val) {
+            if (property_exists($this, $key)) {
+                $this->$key = $val;
+            }
+        }
     }
 
     public function getGroup()
@@ -130,11 +130,12 @@ class Benefit
     }
 
     /**
-     * 尝试将本权益应用在商品集合 $products 上
+     * TODO 尝试将本权益应用在商品集合 $products 上
      * @param $products
+     * @return bool true为应用了这个权益
      */
-    public function attempt($products)
+    public function attempt(& $products)
     {
-        return $products;
+        return false;
     }
 }

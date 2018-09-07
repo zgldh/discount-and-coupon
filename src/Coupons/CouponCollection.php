@@ -15,4 +15,12 @@ class CouponCollection extends \ArrayObject
     public function appendCoupon(Coupon $coupon)
     {
     }
+
+    /**
+     * @return array
+     */
+    public function getApplied()
+    {
+        return (array)$this;
+    }
 }

@@ -15,4 +15,12 @@ class DiscountCollection extends \ArrayObject
     public function appendDiscount(Discount $discount)
     {
     }
+
+    /**
+     * @return array
+     */
+    public function getApplied()
+    {
+        return (array)$this;
+    }
 }

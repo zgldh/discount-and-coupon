@@ -24,7 +24,7 @@ class Calculator
      */
     private $coupons = null;
     /**
-     * @var []
+     * @var ProductCollection
      */
     private $products = null;
 
@@ -63,22 +63,22 @@ class Calculator
     }
 
     /**
-     * @param CouponCollection $couponCollection
+     * @param CouponCollection|array $couponCollection
      * @return Calculator
      */
-    public function setCoupons(CouponCollection $couponCollection): Calculator
+    public function setCoupons($couponCollection): Calculator
     {
-        $this->coupons = $couponCollection;
+        $this->coupons = is_a($couponCollection, CouponCollection::class) ? $couponCollection : new CouponCollection($couponCollection);
         return $this;
     }
 
     /**
-     * @param DiscountCollection $discountCollection
+     * @param DiscountCollection|array $discountCollection
      * @return Calculator
      */
-    public function setDiscounts(DiscountCollection $discountCollection): Calculator
+    public function setDiscounts($discountCollection): Calculator
     {
-        $this->discounts = $discountCollection;
+        $this->discounts = is_a($discountCollection, DiscountCollection::class) ? $discountCollection : new DiscountCollection($discountCollection);
         return $this;
     }
 
@@ -120,7 +120,7 @@ class Calculator
 
     public function setProducts($products): Calculator
     {
-        $this->products = $products;
+        $this->products = new ProductCollection($products);
         return $this;
     }
 
@@ -146,7 +146,7 @@ class Calculator
     }
 
     /**
-     * TODO Calculate and get Result
+     * Calculate and get Result
      * @return Result
      */
     public function calculate(): Result
@@ -154,7 +154,9 @@ class Calculator
         $benefits = $this->getBenefits();
         /** @var Benefit $benefit */
         foreach ($benefits as $benefit) {
-            $this->products = $benefit->attempt($this->products);
+            if ($benefit->attempt($this->products)) {
+                // TODO
+            }
         }
         return $this->getResult();
     }
@@ -162,6 +164,10 @@ class Calculator
     private function getResult()
     {
         $result = new Result();
+        $result->setPrice($this->products->getPrice());
+        $result->setFinalPrice($this->products->getFinalPrice());
+        $result->setDiscounts($this->discounts->getApplied());
+        $result->setCoupons($this->coupons->getApplied());
         return $result;
     }
 

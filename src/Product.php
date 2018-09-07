@@ -63,4 +63,68 @@ class Product
     {
         $this->properties[$name] = $value;
     }
+
+    /**
+     * @return float
+     */
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param float $price
+     */
+    public function setPrice(float $price)
+    {
+        $this->price = $price;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getSku(): mixed
+    {
+        return $this->sku;
+    }
+
+    /**
+     * @param mixed|null $sku
+     */
+    public function setSku(mixed $sku)
+    {
+        $this->sku = $sku;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getCategory(): mixed
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param mixed|null $category
+     */
+    public function setCategory(mixed $category)
+    {
+        $this->category = $category;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getName(): mixed
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed|null $name
+     */
+    public function setName(mixed $name)
+    {
+        $this->name = $name;
+    }
 }

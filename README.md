@@ -41,16 +41,17 @@
     $result->benefit;                       // final_price 减去 price
     $result->discounts;                     // 实际应用的 discounts， 内含每个 discount 提供了多少 benefit。
     $result->coupons;                       // 实际应用的 coupons， 内含每个 coupon 提供了多少 benefit。
-    foreach($result->products as $product)    // 所有享受到权益的货物数组，每个元素对应一个货物
-    {
-        $product->sku;                        // 该货物 SKU
-        $product->price;                      // 货物原价
-        $product->category;                   // 货物分类 ID
-        $product->name;                       // 货物名字
-        $product->foo;                        // 其他参数
-        $product->discounts;                  // 该货物应用的 discounts
-        $product->coupons;                    // 该货物应用的 coupons
-    }
+// TODO
+//    foreach($result->products as $product)    // 所有享受到权益的货物数组，每个元素对应一个货物
+//    {
+//        $product->sku;                        // 该货物 SKU
+//        $product->price;                      // 货物原价
+//        $product->category;                   // 货物分类 ID
+//        $product->name;                       // 货物名字
+//        $product->foo;                        // 其他参数
+//        $product->discounts;                  // 该货物应用的 discounts
+//        $product->coupons;                    // 该货物应用的 coupons
+//    }
 
 ```
 
@@ -60,7 +61,7 @@
 ```
 use zgldh\DiscountAndCoupon\Discounts\Discount;
 
-class FlatDiscountWhenPurchaseAbove extends Discount{
+class FlatDiscountWhenPurchaseExceed extends Discount{
     private $above = null;      // 满多少钱
     private $deduction = null;  // 减多少钱
 
@@ -78,14 +79,14 @@ class FlatDiscountWhenPurchaseAbove extends Discount{
 }
 
 // 满20减2
-$d2a20 = new FlatDiscountWhenPurchaseAbove(['above'=>20,'deduction'=>2,'priority'=>101]);
+$d2a20 = new FlatDiscountWhenPurchaseExceed(['above'=>20,'deduction'=>2,'priority'=>101]);
 // 满50减10
-$d10a50 = new FlatDiscountWhenPurchaseAbove(['above'=>50,'deduction'=>10,'priority'=>102]);
+$d10a50 = new FlatDiscountWhenPurchaseExceed(['above'=>50,'deduction'=>10,'priority'=>102]);
 // 满100减30
-$d30a100 = new FlatDiscountWhenPurchaseAbove(['above'=>100,'deduction'=>30,'priority'=>103]);
+$d30a100 = new FlatDiscountWhenPurchaseExceed(['above'=>100,'deduction'=>30,'priority'=>103]);
 ```
 
-上面我们定义了 `FlatDiscountWhenPurchaseAbove` 类，用于描述“满减”这一类活动。
+上面我们定义了 `FlatDiscountWhenPurchaseExceed` 类，用于描述“满减”这一类活动。
 
 然后我们新建了 3 个该类的对象，分别代表满20减2, 满50减10, 满100减30 这三种活动。
 
