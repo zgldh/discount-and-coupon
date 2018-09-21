@@ -29,6 +29,9 @@ class ProductCollection extends \ArrayObject
         }, 0);
     }
 
+    /**
+     * 得到最终总价
+     */
     public function getFinalPrice()
     {
 

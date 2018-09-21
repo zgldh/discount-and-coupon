@@ -24,15 +24,15 @@ class Calculator
      */
     private $coupons = null;
     /**
-     * @var ProductCollection
-     */
-    private $products = null;
-
-    /**
      * Other parameters
      * @var array
      */
     private $parameters = [];
+
+    /**
+     * @var ProductCollection
+     */
+    private $products = null;
 
     public function __construct()
     {
@@ -185,7 +185,7 @@ class Calculator
         foreach ($this->coupons as $coupon) {
             $benefits[] = $coupon;
         }
-        usort($benefits, function ($a, $b) {
+        usort($benefits, function (Benefit $a, Benefit $b) {
             $priorityA = $a->getPriority();
             $priorityB = $b->getPriority();
             return $priorityB - $priorityA;

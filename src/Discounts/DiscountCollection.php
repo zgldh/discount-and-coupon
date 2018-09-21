@@ -17,6 +17,7 @@ class DiscountCollection extends \ArrayObject
     }
 
     /**
+     * TODO
      * @return array
      */
     public function getApplied()

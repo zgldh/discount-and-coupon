@@ -17,6 +17,7 @@ class CouponCollection extends \ArrayObject
     }
 
     /**
+     * TODO
      * @return array
      */
     public function getApplied()
