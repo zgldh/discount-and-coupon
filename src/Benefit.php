@@ -123,14 +123,14 @@ class Benefit
     }
 
     /**
-     * 返回改变过的 scope 商品集合。 用于某些会增加、删除、修改商品的权益。
-     * @param $scopeProductions
+     * 返回改变过的 scope 商品集合。 用于某些会"增加、删除、修改商品"的权益。
+     * @param $scopeProducts
      * @param $scopeTotalPrice
      * @return mixed
      */
-    protected function newScopeProductions($scopeProductions, $scopeTotalPrice)
+    protected function newScopeProducts($scopeProducts, $scopeTotalPrice)
     {
-        return $scopeProductions;
+        return $scopeProducts;
     }
 
     /**
@@ -143,6 +143,16 @@ class Benefit
     protected function newScopePrice($scopeProducts, $scopeTotalPrice)
     {
         return $scopeTotalPrice;
+    }
+
+    /**
+     * TODO 更新 products 的 final price
+     * @param $scopeProducts
+     * @param $scopeTotalPrice
+     * @param $newScopeTotalPrice
+     */
+    private function updateProductsFinalPrice($scopeProducts, $scopeTotalPrice, $newScopeTotalPrice)
+    {
     }
 
     /**
@@ -186,7 +196,7 @@ class Benefit
         if (sizeof($scopeProducts) === 0) {
             return false;
         }
-        
+
         $scopeTotalPrice = $this->sumTotalPrice($scopeProducts);
 
         // 判断该商品集合是否符合条件
@@ -196,10 +206,13 @@ class Benefit
         $this->setIsApplied(true);
 
         // 返回改变过的 scope 商品集合。 用于某些会增加、删除、修改商品的权益。
-        $scopeProducts = $this->newScopeProductions($scopeProducts, $scopeTotalPrice);
+        $scopeProducts = $this->newScopeProducts($scopeProducts, $scopeTotalPrice);
 
         // 返回 scope 应用本权益后的新总价
         $newScopeTotalPrice = $this->newScopePrice($scopeProducts, $scopeTotalPrice);
+
+        // 计算涉及到的每个货物的新价格
+        $this->updateProductsFinalPrice($scopeProducts, $scopeTotalPrice, $newScopeTotalPrice);
 
         $this->setBenefit($newScopeTotalPrice - $scopeTotalPrice);
 

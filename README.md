@@ -163,7 +163,7 @@ class YogurtBuyOneGetOne extends Discount{
         return $product->sku === SKU_YOGURT;
     }
 
-    public function newScopeProductions($scopeProductions, $scopeTotalPrice)
+    public function newScopeProducts($scopeProducts, $scopeTotalPrice)
     {
         $count = count($scopeProducts);
         for($i = 0; $i<$count; $i++)
@@ -173,7 +173,7 @@ class YogurtBuyOneGetOne extends Discount{
                 'price'=>0
             ]);
         }
-        return $scopeProductions;
+        return $scopeProducts;
     }
 }
 
@@ -228,15 +228,15 @@ class UpgradeBeverage extends Coupon{
         return $product->sku === SMALL_COKE;
     }
 
-    public function newScopeProductions($scopeProductions, $scopeTotalPrice)
+    public function newScopeProducts($scopeProducts, $scopeTotalPrice)
     {
-        $firstCoke = $scopeProductions[0];
+        $firstCoke = $scopeProducts[0];
         if($firstCoke)
         {
             $firstCoke['sku'] = BIG_COKE;
             $firstCoke['name'] = 'Big Coke';
         }
-        return $scopeProductions;
+        return $scopeProducts;
     }
 
     public function onApplied($scopeProducts)

@@ -8,7 +8,7 @@ use zgldh\DiscountAndCoupon\Discounts\FlatDiscountWhenPurchaseExceed;
 
 class BasicTestCase extends TestCase
 {
-    protected function production($params = [])
+    protected function product($params = [])
     {
         $sku = isset($params['sku']) ? $params['sku'] : uniqid('sku-');
         $params['sku'] = $sku;

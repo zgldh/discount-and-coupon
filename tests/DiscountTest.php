@@ -25,9 +25,9 @@ class DiscountTest extends BasicTestCase
                 $d30a100
             ])
             ->setProducts([                     // 设置要买的货物            必填
-                $this->production(['price' => 2.8]),
-                $this->production(['price' => 20]),
-                $this->production(['price' => 31])
+                $this->product(['price' => 2.8]),
+                $this->product(['price' => 20]),
+                $this->product(['price' => 31])
             ])
             ->calculate();                      // 开始计算
 
