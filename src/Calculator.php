@@ -68,7 +68,8 @@ class Calculator
      */
     public function setCoupons($couponCollection): Calculator
     {
-        $this->coupons = is_a($couponCollection, CouponCollection::class) ? $couponCollection : new CouponCollection($couponCollection);
+        $this->coupons = is_a($couponCollection,
+            CouponCollection::class) ? $couponCollection : new CouponCollection($couponCollection);
         return $this;
     }
 
@@ -78,7 +79,8 @@ class Calculator
      */
     public function setDiscounts($discountCollection): Calculator
     {
-        $this->discounts = is_a($discountCollection, DiscountCollection::class) ? $discountCollection : new DiscountCollection($discountCollection);
+        $this->discounts = is_a($discountCollection,
+            DiscountCollection::class) ? $discountCollection : new DiscountCollection($discountCollection);
         return $this;
     }
 
@@ -154,9 +156,7 @@ class Calculator
         $benefits = $this->getBenefits();
         /** @var Benefit $benefit */
         foreach ($benefits as $benefit) {
-            if ($benefit->attempt($this->products)) {
-                // TODO
-            }
+            $benefit->attempt($this->products);
         }
         return $this->getResult();
     }

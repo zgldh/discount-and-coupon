@@ -8,20 +8,13 @@
 
 namespace zgldh\DiscountAndCoupon\Coupons;
 
+use zgldh\DiscountAndCoupon\BenefitCollection;
 
-class CouponCollection extends \ArrayObject
+class CouponCollection extends BenefitCollection
 {
 
     public function appendCoupon(Coupon $coupon)
     {
-    }
-
-    /**
-     * TODO
-     * @return array
-     */
-    public function getApplied()
-    {
-        return (array)$this;
+        return parent::appendBenefit($coupon);
     }
 }

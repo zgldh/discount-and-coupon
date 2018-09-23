@@ -42,10 +42,24 @@ class Product
      */
     private $properties = [];
 
+    /**
+     * 货物最终价格
+     * @var float
+     */
+    private $final_price = 0.0;
+
+    /**
+     * 在本产品上应用过的 Benefit
+     * @var array
+     */
+    private $appliedBenefits = [];
+
     public function __construct($data = [])
     {
+        $data = json_decode(json_encode($data), true);
         $this->sku = $data['sku'];
         $this->price = floatval($data['price']);
+        $this->final_price = $this->price;
         $this->category = isset($data['category']) ? $data['category'] : null;
         $this->name = isset($data['name']) ? $data['name'] : null;
 
@@ -126,5 +140,55 @@ class Product
     public function setName(mixed $name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return float
+     */
+    public function getFinalPrice(): float
+    {
+        return $this->final_price;
+    }
+
+    /**
+     * @param float $final_price
+     */
+    public function setFinalPrice(float $final_price): void
+    {
+        $this->final_price = $final_price;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAppliedBenefits(): array
+    {
+        return $this->appliedBenefits;
+    }
+
+    /**
+     * @param array $appliedBenefits
+     */
+    public function setAppliedBenefits(array $appliedBenefits): void
+    {
+        $this->appliedBenefits = $appliedBenefits;
+    }
+
+    /**
+     * 追加一个应用到本产品的 Benefit
+     * @param Benefit $benefit
+     */
+    public function appendAppliedBenefit(Benefit $benefit)
+    {
+        array_push($this->appliedBenefits, $benefit);
+    }
+
+    /**
+     * 是否本产品应用过任何 Benefit
+     * @return bool
+     */
+    public function isAppliedBenefit()
+    {
+        return sizeof($this->getAppliedBenefits()) > 0;
     }
 }

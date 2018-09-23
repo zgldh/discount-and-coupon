@@ -16,6 +16,8 @@ class FlatDiscountWhenPurchaseExceed extends Discount
 
     protected $priority = 100;    // 默认优先级
 
+    protected $exclusive = true;
+
     protected function isScopeQualified($scopeProducts, $scopeTotalPrice)
     {
         return $scopeTotalPrice >= $this->above;

@@ -32,5 +32,8 @@ class DiscountTest extends BasicTestCase
             ->calculate();                      // 开始计算
 
         $this->assertEquals(2.8 + 20 + 31, $result->getPrice());
+        $this->assertEquals(2.8 + 20 + 31 - 10, $result->getFinalPrice());
+
+        var_dump($result);
     }
 }

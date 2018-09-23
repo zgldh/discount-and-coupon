@@ -14,7 +14,7 @@ class ProductCollection extends \ArrayObject
     private $originalTotalPrice = 0.0;
     private $currentTotalPrice = 0.0;
 
-    public function __construct($input = array(), int $flags = 0, string $iterator_class = "ArrayIterator")
+    public function __construct($input = [], int $flags = 0, string $iterator_class = "ArrayIterator")
     {
         $input = array_map(function ($item) {
             return new Product($item);
@@ -34,6 +34,8 @@ class ProductCollection extends \ArrayObject
      */
     public function getFinalPrice()
     {
-
+        return array_reduce((array)$this, function ($carry, Product $item) {
+            return $carry + $item->getFinalPrice();
+        }, 0);
     }
 }

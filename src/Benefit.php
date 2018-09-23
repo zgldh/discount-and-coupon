@@ -83,7 +83,7 @@ class Benefit
     }
 
     /**
-     * @return int
+     * @return float
      */
     public function getBenefit(): float
     {
@@ -105,7 +105,7 @@ class Benefit
      * @param $product
      * @return bool
      */
-    protected function scope($product)
+    protected function scope(Product $product)
     {
         return true;
     }
@@ -146,13 +146,19 @@ class Benefit
     }
 
     /**
-     * TODO 更新 products 的 final price
+     * 更新 products 的 final price
      * @param $scopeProducts
      * @param $scopeTotalPrice
      * @param $newScopeTotalPrice
+     * @return array
      */
     private function updateProductsFinalPrice($scopeProducts, $scopeTotalPrice, $newScopeTotalPrice)
     {
+        array_walk($scopeProducts, function (Product $product, $index, $scale) {
+            $finalPrice = $product->getFinalPrice() * $scale;
+            $product->setFinalPrice($finalPrice);
+        }, $newScopeTotalPrice / $scopeTotalPrice);
+        return $scopeProducts;
     }
 
     /**
@@ -193,11 +199,18 @@ class Benefit
     {
         // 找出范围内的商品集合
         $scopeProducts = array_filter($products->getArrayCopy(), [$this, 'scope']);
+        if ($this->exclusive) {
+            $scopeProducts = array_filter($scopeProducts, function (Product $product) {
+                return $product->isAppliedBenefit() === false;
+            });
+        }
         if (sizeof($scopeProducts) === 0) {
             return false;
         }
 
-        $scopeTotalPrice = $this->sumTotalPrice($scopeProducts);
+        $scopeTotalPrice = array_reduce($scopeProducts, function ($pre, Product $product) {
+            return $pre + $product->getFinalPrice();    // getPrice() 只是原价，我们要得到最新的价格
+        }, 0);
 
         // 判断该商品集合是否符合条件
         if (!$this->isScopeQualified($scopeProducts, $scopeTotalPrice)) {
@@ -213,24 +226,15 @@ class Benefit
 
         // 计算涉及到的每个货物的新价格
         $this->updateProductsFinalPrice($scopeProducts, $scopeTotalPrice, $newScopeTotalPrice);
+        // 在 scopeProducts 的每个 product 上记录本权益
+        array_walk($scopeProducts, function (Product $product) {
+            $product->appendAppliedBenefit($this);
+        });
 
         $this->setBenefit($newScopeTotalPrice - $scopeTotalPrice);
 
         $this->onApplied($scopeProducts, $newScopeTotalPrice);
 
         return true;
-    }
-
-    /**
-     * 计算产品总价
-     * @param $products
-     * @return mixed
-     */
-    private function sumTotalPrice(array $products)
-    {
-        $sum = array_reduce($products, function ($pre, Product $product) {
-            return $pre + $product->getPrice();
-        }, 0);
-        return $sum;
     }
 }
