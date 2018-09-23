@@ -66,6 +66,11 @@ class Benefit
         return $this->group;
     }
 
+    public function isGroup($groupName)
+    {
+        return $this->getGroup() === $groupName;
+    }
+
     /**
      * @return bool
      */
@@ -191,9 +196,9 @@ class Benefit
     }
 
     /**
-     * TODO 尝试将本权益应用在商品集合 $products 上
+     * 尝试将本权益应用在商品集合 $products 上
      * @param ProductCollection $products
-     * @return bool true为应用了这个权益
+     * @return bool true: 应用了这个权益
      */
     public function attempt(ProductCollection $products)
     {
@@ -204,6 +209,16 @@ class Benefit
                 return $product->isAppliedBenefit() === false;
             });
         }
+        /**
+         * 权益的组名
+         * $this->group;
+         * 最多允许同一个权益组内的权益一共被应用几次。比如一系列满减活动可以属于同一个权益组，且最多被应用一次。
+         * $this->groupMaxApplyTime = 1;
+         */
+        $scopeProducts = array_filter($scopeProducts, function (Product $product) {
+            return $product->getGroupAppliedTimes($this->getGroup()) < $this->groupMaxApplyTime;
+        });
+
         if (sizeof($scopeProducts) === 0) {
             return false;
         }

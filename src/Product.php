@@ -191,4 +191,16 @@ class Product
     {
         return sizeof($this->getAppliedBenefits()) > 0;
     }
+
+    /**
+     * 得到本产品被某个 Benefit group 应用的次数
+     * @param $groupName
+     * @return int
+     */
+    public function getGroupAppliedTimes($groupName)
+    {
+        return sizeof(array_filter($this->appliedBenefits, function (Benefit $benefit) use ($groupName) {
+            return $benefit->isGroup($groupName);
+        }));
+    }
 }
