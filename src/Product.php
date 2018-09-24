@@ -153,7 +153,7 @@ class Product
     /**
      * @param float $final_price
      */
-    public function setFinalPrice(float $final_price): void
+    public function setFinalPrice(float $final_price)
     {
         $this->final_price = $final_price;
     }
@@ -169,7 +169,7 @@ class Product
     /**
      * @param array $appliedBenefits
      */
-    public function setAppliedBenefits(array $appliedBenefits): void
+    public function setAppliedBenefits(array $appliedBenefits)
     {
         $this->appliedBenefits = $appliedBenefits;
     }
