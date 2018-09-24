@@ -202,23 +202,7 @@ class Benefit
      */
     public function attempt(ProductCollection $products)
     {
-        // 找出范围内的商品集合
-        $scopeProducts = array_filter($products->getArrayCopy(), [$this, 'scope']);
-        if ($this->exclusive) {
-            $scopeProducts = array_filter($scopeProducts, function (Product $product) {
-                return $product->isAppliedBenefit() === false;
-            });
-        }
-        /**
-         * 权益的组名
-         * $this->group;
-         * 最多允许同一个权益组内的权益一共被应用几次。比如一系列满减活动可以属于同一个权益组，且最多被应用一次。
-         * $this->groupMaxApplyTime = 1;
-         */
-        $scopeProducts = array_filter($scopeProducts, function (Product $product) {
-            return $product->getGroupAppliedTimes($this->getGroup()) < $this->groupMaxApplyTime;
-        });
-
+        $scopeProducts = $this->filterScopeProducts($products->getArrayCopy());
         if (sizeof($scopeProducts) === 0) {
             return false;
         }
@@ -251,5 +235,31 @@ class Benefit
         $this->onApplied($scopeProducts, $newScopeTotalPrice);
 
         return true;
+    }
+
+    /**
+     * 过滤出适合本 Benefit 的 products
+     * @param $productsArray
+     * @return array
+     */
+    private function filterScopeProducts($productsArray)
+    {
+        // 找出范围内的商品集合
+        $scopeProducts = array_filter($productsArray, [$this, 'scope']);
+        if ($this->exclusive) {
+            $scopeProducts = array_filter($scopeProducts, function (Product $product) {
+                return $product->isAppliedBenefit() === false;
+            });
+        }
+        /**
+         * 权益的组名
+         * $this->group;
+         * 最多允许同一个权益组内的权益一共被应用几次。比如一系列满减活动可以属于同一个权益组，且最多被应用一次。
+         * $this->groupMaxApplyTime = 1;
+         */
+        $scopeProducts = array_filter($scopeProducts, function (Product $product) {
+            return $product->getGroupAppliedTimes($this->getGroup()) < $this->groupMaxApplyTime;
+        });
+        return $scopeProducts;
     }
 }
