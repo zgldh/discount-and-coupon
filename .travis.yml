@@ -4,4 +4,5 @@ php:
   - hhvm # on Trusty only
   - nightly
   
-composer install
+install:
+  - composer install
