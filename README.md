@@ -1,6 +1,8 @@
 # zgldh/discount-and-coupon
 优惠活动、折扣计算器
 
+[![Build Status](https://travis-ci.com/zgldh/discount-and-coupon.svg?branch=master)](https://travis-ci.com/zgldh/discount-and-coupon)
+
 ## 定义
 1. discount 折扣活动，通常用于店铺对所有消费者的活动。
 2. coupon   优惠券，通常属于一个特定的消费者的特权。
