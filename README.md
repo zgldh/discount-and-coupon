@@ -1,6 +1,8 @@
 # zgldh/discount-and-coupon
 优惠活动、折扣计算器
 
+[![Build Status](https://travis-ci.com/zgldh/discount-and-coupon.svg?branch=master)](https://travis-ci.com/zgldh/discount-and-coupon)
+
 ## 定义
 1. discount 折扣活动，通常用于店铺对所有消费者的活动。
 2. coupon   优惠券，通常属于一个特定的消费者的特权。
@@ -11,8 +13,8 @@
 
 ## 功能
 1. 输入“折扣活动(discount)”，“优惠券(coupon)”和一些货品，即可计算出最终价格。
-2. 可以得出每一个货品参与了哪些 权益。
-3. 提供各个权益的 before 和 after 回调。before 可以返回 boolean 值来决定是否应用该权益，after 处理应用了权益的后续操作。
+2. TODO 可以得出每一个货品参与了哪些 权益。
+3. TODO 提供各个权益的 before 和 after 回调。before 可以返回 boolean 值来决定是否应用该权益，after 处理应用了权益的后续操作。
 
 ## 用法
 
