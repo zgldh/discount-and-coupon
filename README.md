@@ -65,14 +65,14 @@ class FlatDiscountWhenPurchaseExceed extends Discount{
     private $above = null;      // 满多少钱
     private $deduction = null;  // 减多少钱
 
-    private $priority = 100;    // 默认优先级
+    protected $priority = 100;    // 默认优先级
 
-    public function isScopeQualified($scopeProducts, $scopeTotalPrice)
+    protected function isScopeQualified($scopeProducts, $scopeTotalPrice)
     {
         return $scopeTotalPrice >= $this->above;
     }
 
-    public function newScopePrice($scopeProducts, $scopeTotalPrice)
+    protected function newScopePrice($scopeProducts, $scopeTotalPrice)
     {
         return $scopeTotalPrice - $this->deduction;
     }
@@ -100,15 +100,15 @@ use zgldh\DiscountAndCoupon\Discounts\Discount;
 const CATEGORY_BREAKFAST = 'breakfast';
 
 class MidAutumnDayBreakfast80Discount extends Discount{
-    private $priority = 200;    // 优先级
+    protected $priority = 200;    // 优先级
 
-    private $exclusive = true;  // 不与其他活动同享
+    protected $exclusive = true;  // 不与其他活动同享
 
-    public function scope($product){
+    protected function scope(Product $product){
         return $product->category === CATEGORY_BREAKFAST;
     }
 
-    public function newScopePrice($scopeProducts, $scopeTotalPrice)
+    protected function newScopePrice($scopeProducts, $scopeTotalPrice)
     {
         return $scopeTotalPrice * 0.8;
     }
@@ -127,15 +127,15 @@ use zgldh\DiscountAndCoupon\Discounts\Discount;
 const SKU_YOGURT = 'yogurt';
 
 class YogurtBuyOneGetOne extends Discount{
-    private $priority = 500;    // 优先级
+    protected $priority = 500;    // 优先级
 
-    private $exclusive = true;  // 不与其他活动同享
+    protected $exclusive = true;  // 不与其他活动同享
 
-    public function scope($product){
+    protected function scope(Product $product){
         return $product->sku === SKU_YOGURT;
     }
 
-    public function newScopePrice($scopeProducts, $scopeTotalPrice)
+    protected function newScopePrice($scopeProducts, $scopeTotalPrice)
     {
         $productsCount = count($scopeProducts);
         $fairCount = ceil($productsCount / 2);
@@ -151,27 +151,28 @@ $yogurtPromotion = new YogurtBuyOneGetOne();
 
 ```
 use zgldh\DiscountAndCoupon\Discounts\Discount;
+use zgldh\DiscountAndCoupon\Product;
 
 const SKU_YOGURT = 'yogurt';
 
 class YogurtBuyOneGetOne extends Discount{
-    private $priority = 500;    // 优先级
+    protected $priority = 500;    // 优先级
 
-    private $exclusive = true;  // 不与其他活动同享
+    protected $exclusive = true;  // 不与其他活动同享
 
-    public function scope($product){
+    protected function scope(Product $product){
         return $product->sku === SKU_YOGURT;
     }
 
-    public function newScopeProducts($scopeProducts, $scopeTotalPrice)
+    protected function newScopeProducts($scopeProducts, $scopeTotalPrice)
     {
         $count = count($scopeProducts);
         for($i = 0; $i<$count; $i++)
         {
-            push($scopeProducts, [
+            array_push($scopeProducts, new Product([
                 'sku'=> SKU_YOGURT,
                 'price'=>0
-            ]);
+            ]));
         }
         return $scopeProducts;
     }
@@ -188,17 +189,17 @@ $yogurtPromotion = new YogurtBuyOneGetOne();
 use zgldh\DiscountAndCoupon\Coupons\Coupon;
 
 class FlatDeduction extends Coupon{
-    private $priority = 0;    // 优先级
+    protected $priority = 0;    // 优先级
 
     private $deduction = 0;
     private $couponId = null;
 
-    public function newScopePrice($scopeProducts, $scopeTotalPrice)
+    protected function newScopePrice($scopeProducts, $scopeTotalPrice)
     {
         return $scopeTotalPrice - $this->deduction;
     }
 
-    public function onApplied($scopeProducts)
+    protected function onApplied($scopeProducts)
     {
         // 如果这个 coupon 只能用一次，则删除这个 coupon 记录
         // 如 DB::table('coupons')->where('id',$this->couponId)->delete();
@@ -222,13 +223,13 @@ const SMALL_COKE = 'small-coke';
 const BIG_COKE = 'big-coke';
 
 class UpgradeBeverage extends Coupon{
-    private $priority = 500;    // 优先级
+    protected $priority = 500;    // 优先级
 
-    public function scope($product){
+    protected function scope(Product $product){
         return $product->sku === SMALL_COKE;
     }
 
-    public function newScopeProducts($scopeProducts, $scopeTotalPrice)
+    protected function newScopeProducts($scopeProducts, $scopeTotalPrice)
     {
         $firstCoke = $scopeProducts[0];
         if($firstCoke)
@@ -239,7 +240,7 @@ class UpgradeBeverage extends Coupon{
         return $scopeProducts;
     }
 
-    public function onApplied($scopeProducts)
+    protected function onApplied($scopeProducts)
     {
         // 如果这个 coupon 只能用一次，则删除这个 coupon 记录
         // 如 DB::table('coupons')->where('id',$this->couponId)->delete();

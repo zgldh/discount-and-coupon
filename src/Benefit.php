@@ -202,7 +202,7 @@ class Benefit
      */
     public function attempt(ProductCollection $products)
     {
-        $scopeProducts = $this->filterScopeProducts($products->getArrayCopy());
+        $scopeProducts = $this->filterScopeProducts($products);
         if (sizeof($scopeProducts) === 0) {
             return false;
         }
@@ -213,12 +213,14 @@ class Benefit
 
         // 判断该商品集合是否符合条件
         if (!$this->isScopeQualified($scopeProducts, $scopeTotalPrice)) {
+            $products->appendProducts(array_reverse($scopeProducts));
             return false;
         }
         $this->setIsApplied(true);
 
         // 返回改变过的 scope 商品集合。 用于某些会增加、删除、修改商品的权益。
         $scopeProducts = $this->newScopeProducts($scopeProducts, $scopeTotalPrice);
+        $products->appendProducts(array_reverse($scopeProducts));
 
         // 返回 scope 应用本权益后的新总价
         $newScopeTotalPrice = $this->newScopePrice($scopeProducts, $scopeTotalPrice);
@@ -233,33 +235,34 @@ class Benefit
         $this->setBenefit($newScopeTotalPrice - $scopeTotalPrice);
 
         $this->onApplied($scopeProducts, $newScopeTotalPrice);
-
         return true;
     }
 
     /**
      * 过滤出适合本 Benefit 的 products
-     * @param $productsArray
+     * @param ProductCollection $productCollection
      * @return array
      */
-    private function filterScopeProducts($productsArray)
+    private function filterScopeProducts(ProductCollection $productCollection)
     {
-        // 找出范围内的商品集合
-        $scopeProducts = array_filter($productsArray, [$this, 'scope']);
-        if ($this->exclusive) {
-            $scopeProducts = array_filter($scopeProducts, function (Product $product) {
-                return $product->isAppliedBenefit() === false;
-            });
+        $filteredProducts = [];
+        $productArray = array_values($productCollection->getArrayCopy());
+
+        for ($index = sizeof($productArray) - 1; $index >= 0; $index--) {
+            /** @var Product $product */
+            $product = $productArray[$index];
+            if (!call_user_func_array([$this, 'scope'], [$product])) {
+                continue;
+            }
+            if ($this->exclusive && $product->isAppliedBenefit()) {
+                continue;
+            }
+            if ($product->getGroupAppliedTimes($this->getGroup()) >= $this->groupMaxApplyTime) {
+                continue;
+            }
+            array_push($filteredProducts, $product);
+            $productCollection->offsetUnset($index);
         }
-        /**
-         * 权益的组名
-         * $this->group;
-         * 最多允许同一个权益组内的权益一共被应用几次。比如一系列满减活动可以属于同一个权益组，且最多被应用一次。
-         * $this->groupMaxApplyTime = 1;
-         */
-        $scopeProducts = array_filter($scopeProducts, function (Product $product) {
-            return $product->getGroupAppliedTimes($this->getGroup()) < $this->groupMaxApplyTime;
-        });
-        return $scopeProducts;
+        return $filteredProducts;
     }
 }

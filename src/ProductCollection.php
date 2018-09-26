@@ -17,7 +17,7 @@ class ProductCollection extends \ArrayObject
     public function __construct($input = [], int $flags = 0, string $iterator_class = "ArrayIterator")
     {
         $input = array_map(function ($item) {
-            return new Product($item);
+            return is_a($item, Product::class) ? $item : new Product($item);
         }, $input);
         parent::__construct($input, $flags, $iterator_class);
     }
@@ -37,5 +37,20 @@ class ProductCollection extends \ArrayObject
         return array_reduce((array)$this, function ($carry, Product $item) {
             return $carry + $item->getFinalPrice();
         }, 0);
+    }
+
+    public function appendProducts($products)
+    {
+        if (is_array($products)) {
+            array_walk($products, function (Product $product) {
+                $this->append($product);
+            });
+        }
+    }
+
+    public function normalize()
+    {
+        $arr = array_values($this->getArrayCopy());
+        $this->exchangeArray($arr);
     }
 }

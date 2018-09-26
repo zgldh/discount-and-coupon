@@ -70,12 +70,19 @@ class Product
 
     public function __get($name)
     {
-        return $this->properties[$name];
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
+        return @$this->properties[$name];
     }
 
     public function __set($name, $value)
     {
-        $this->properties[$name] = $value;
+        if (property_exists($this, $name)) {
+            $this->$name = $value;
+        } else {
+            $this->properties[$name] = $value;
+        }
     }
 
     /**

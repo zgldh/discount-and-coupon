@@ -13,6 +13,7 @@ class BenefitCollection extends \ArrayObject
 
     public function appendBenefit(Benefit $benefit)
     {
+        $this->append($benefit);
     }
 
     /**

@@ -16,6 +16,7 @@ class Result
     private $benefit = 0.0;
     private $discounts = [];
     private $coupons = [];
+    private $products = null;
 
     /**
      * @param mixed $final_price
@@ -107,5 +108,22 @@ class Result
     public function getCoupons(): array
     {
         return $this->coupons;
+    }
+
+    /**
+     * @return ProductCollection
+     */
+    public function getProducts()
+    {
+        return $this->products;
+    }
+
+    /**
+     * @param null $products
+     */
+    public function setProducts($products)
+    {
+        $this->products = is_a($products,
+            ProductCollection::class) ? $products : new ProductCollection($products);
     }
 }

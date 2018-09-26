@@ -157,6 +157,7 @@ class Calculator
         /** @var Benefit $benefit */
         foreach ($benefits as $benefit) {
             $benefit->attempt($this->products);
+            $this->products->normalize();
         }
         return $this->getResult();
     }
@@ -168,6 +169,7 @@ class Calculator
         $result->setFinalPrice($this->products->getFinalPrice());
         $result->setDiscounts($this->discounts->getApplied());
         $result->setCoupons($this->coupons->getApplied());
+        $result->setProducts($this->products);
         return $result;
     }
 
