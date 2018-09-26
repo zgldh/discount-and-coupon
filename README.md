@@ -60,7 +60,7 @@
 ### 如何定义店铺折扣活动 Discount
 
 #### 1. 定义店铺的“满减活动”：
-```
+```php
 use zgldh\DiscountAndCoupon\Discounts\Discount;
 
 class FlatDiscountWhenPurchaseExceed extends Discount{
@@ -96,7 +96,7 @@ $d30a100 = new FlatDiscountWhenPurchaseExceed(['above'=>100,'deduction'=>30,'pri
 
 #### 2. 定义店铺的“迎中秋早餐8折”活动，不与其他活动同享：
 
-```
+```php
 use zgldh\DiscountAndCoupon\Discounts\Discount;
 
 const CATEGORY_BREAKFAST = 'breakfast';
@@ -123,7 +123,7 @@ $midAutumnDayDiscountEvent = new MidAutumnDayBreakfast80Discount();
 
 下列代码是以减价实现本促销活动，会影响本次订单最终价格。
 
-```
+```php
 use zgldh\DiscountAndCoupon\Discounts\Discount;
 
 const SKU_YOGURT = 'yogurt';
@@ -151,7 +151,7 @@ $yogurtPromotion = new YogurtBuyOneGetOne();
 
 下列代码是以赠送货品实现促销活动，不会影响本次订单最终价格，但会增加商品。
 
-```
+```php
 use zgldh\DiscountAndCoupon\Discounts\Discount;
 use zgldh\DiscountAndCoupon\Product;
 
@@ -187,7 +187,7 @@ $yogurtPromotion = new YogurtBuyOneGetOne();
 
 #### 1. 定义代金券
 
-```
+```php
 use zgldh\DiscountAndCoupon\Coupons\Coupon;
 
 class FlatDeduction extends Coupon{
@@ -218,7 +218,7 @@ $flatDeduction50= new FlatDeduction([ 'deduction'=>50, 'coupon_id'=>125 ]); // 5
 
 能把订单内的某种饮料的一件商品替换成更贵的饮料。 本质是替换商品，所以你可以任意定义规则。
 
-```
+```php
 use zgldh\DiscountAndCoupon\Coupons\Coupon;
 
 const SMALL_COKE = 'small-coke';
