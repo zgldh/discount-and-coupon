@@ -38,22 +38,23 @@
          ])
         ->calculate();                      // 开始计算
 
-    $result->price;                         // 原始总价， 两位小数
-    $result->final_price;                   // 最终总价， 两位小数
-    $result->benefit;                       // final_price 减去 price
-    $result->discounts;                     // 实际应用的 discounts， 内含每个 discount 提供了多少 benefit。
-    $result->coupons;                       // 实际应用的 coupons， 内含每个 coupon 提供了多少 benefit。
-// TODO
-//    foreach($result->products as $product)    // 所有享受到权益的货物数组，每个元素对应一个货物
-//    {
-//        $product->sku;                        // 该货物 SKU
-//        $product->price;                      // 货物原价
-//        $product->category;                   // 货物分类 ID
-//        $product->name;                       // 货物名字
-//        $product->foo;                        // 其他参数
-//        $product->discounts;                  // 该货物应用的 discounts
-//        $product->coupons;                    // 该货物应用的 coupons
-//    }
+    $result->getPrice();                    // 原始总价， 两位小数
+    $result->getFinalPrice();               // 最终总价， 两位小数
+    $result->getProfit();                   // final_price 减去 price
+    $result->getDiscounts();                // 实际应用的 discounts， 内含每个 discount 提供了多少 profit。
+    $result->getCoupons();                  // 实际应用的 coupons， 内含每个 coupon 提供了多少 profit。
+
+    foreach($result->getProducts() as $product) // 所有享受到权益的货物数组，每个元素对应一个货物
+    {
+        $product->getSku();                     // 该货物 SKU
+        $product->getPrice();                   // 货物原价
+        $product->getFinalPrice();              // 货物均摊最终价 （仅供参考）
+        $product->getCategory();                // 货物分类 ID
+        $product->getName();                    // 货物名字
+        $product->foo;                          // 其他参数
+        $product->getDiscounts();               // 该货物应用的 discounts
+        $product->getCoupons();                 // 该货物应用的 coupons
+    }
 
 ```
 

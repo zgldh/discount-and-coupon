@@ -169,7 +169,9 @@ class Calculator
         $result->setFinalPrice($this->products->getFinalPrice());
         $result->setDiscounts($this->discounts->getApplied());
         $result->setCoupons($this->coupons->getApplied());
-        $result->setProducts($this->products);
+        $result->setProducts(array_filter($this->products->getArrayCopy(), function (Product $product) {
+            return $product->isAppliedBenefit();
+        }));
         return $result;
     }
 

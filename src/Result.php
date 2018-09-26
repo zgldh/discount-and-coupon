@@ -13,7 +13,7 @@ class Result
 {
     private $final_price = 0.0;
     private $price = 0.0;
-    private $benefit = 0.0;
+    private $profit = 0.0;
     private $discounts = [];
     private $coupons = [];
     private $products = null;
@@ -25,7 +25,7 @@ class Result
     public function setFinalPrice($final_price)
     {
         $this->final_price = $final_price;
-        $this->benefit = $this->final_price - $this->price;
+        $this->profit = $this->final_price - $this->price;
         return $this;
     }
 
@@ -36,7 +36,7 @@ class Result
     public function setPrice($price)
     {
         $this->price = $price;
-        $this->benefit = $this->final_price - $this->price;
+        $this->profit = $this->final_price - $this->price;
         return $this;
     }
 
@@ -57,21 +57,21 @@ class Result
     }
 
     /**
-     * @param mixed $benefit
+     * @param mixed $profit
      * @return Result
      */
-    public function setBenefit($benefit)
+    public function setProfit($profit)
     {
-        $this->benefit = $benefit;
+        $this->profit = $profit;
         return $this;
     }
 
     /**
      * @return mixed
      */
-    public function getBenefit()
+    public function getProfit()
     {
-        return $this->benefit;
+        return $this->profit;
     }
 
     /**

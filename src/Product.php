@@ -8,6 +8,9 @@
 
 namespace zgldh\DiscountAndCoupon;
 
+use zgldh\DiscountAndCoupon\Coupons\Coupon;
+use zgldh\DiscountAndCoupon\Discounts\Discount;
+
 
 /**
  * Class Product
@@ -163,6 +166,26 @@ class Product
     public function setFinalPrice(float $final_price)
     {
         $this->final_price = $final_price;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDiscounts(): array
+    {
+        return array_filter($this->getAppliedBenefits(), function ($benefit) {
+            return is_a($benefit, Discount::class);
+        });
+    }
+
+    /**
+     * @return array
+     */
+    public function getCoupons(): array
+    {
+        return array_filter($this->getAppliedBenefits(), function ($benefit) {
+            return is_a($benefit, Coupon::class);
+        });
     }
 
     /**

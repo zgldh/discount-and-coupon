@@ -46,7 +46,7 @@ class Benefit
      * 如果应用了，本权益让价格改变了多少。 一般来说是负数，负数越小说明消费者越实惠。
      * @var float
      */
-    private $benefit = 0.0;
+    private $profit = 0.0;
 
 
     public function __construct($parameters = [])
@@ -90,17 +90,17 @@ class Benefit
     /**
      * @return float
      */
-    public function getBenefit(): float
+    public function getProfit(): float
     {
-        return $this->benefit;
+        return $this->profit;
     }
 
     /**
-     * @param float $benefit
+     * @param float $profit
      */
-    public function setBenefit(float $benefit)
+    public function setProfit(float $profit)
     {
-        $this->benefit = $benefit;
+        $this->profit = $profit;
     }
 
     /**
@@ -129,6 +129,7 @@ class Benefit
 
     /**
      * 返回改变过的 scope 商品集合。 用于某些会"增加、删除、修改商品"的权益。
+     * 请在子类重写本函数
      * @param $scopeProducts
      * @param $scopeTotalPrice
      * @return mixed
@@ -151,6 +152,17 @@ class Benefit
     }
 
     /**
+     * 当本权益真的被应用时调用。
+     * 请在子类重写本函数
+     * @param $scopeProducts
+     * @param $newScopeTotalPrice
+     */
+    protected function onApplied($scopeProducts, $newScopeTotalPrice)
+    {
+
+    }
+
+    /**
      * 更新 products 的 final price
      * @param $scopeProducts
      * @param $scopeTotalPrice
@@ -161,20 +173,14 @@ class Benefit
     {
         array_walk($scopeProducts, function (Product $product, $index, $scale) {
             $finalPrice = $product->getFinalPrice() * $scale;
+            $profit = $finalPrice - $product->getFinalPrice();
             $product->setFinalPrice($finalPrice);
+
+            $benefit = clone $this;
+            $benefit->setProfit($profit);
+            $product->appendAppliedBenefit($benefit);
         }, $newScopeTotalPrice / $scopeTotalPrice);
         return $scopeProducts;
-    }
-
-    /**
-     * 当本权益真的被应用时调用。
-     * 请在子类重写本函数
-     * @param $scopeProducts
-     * @param $newScopeTotalPrice
-     */
-    protected function onApplied($scopeProducts, $newScopeTotalPrice)
-    {
-
     }
 
     /**
@@ -227,12 +233,8 @@ class Benefit
 
         // 计算涉及到的每个货物的新价格
         $this->updateProductsFinalPrice($scopeProducts, $scopeTotalPrice, $newScopeTotalPrice);
-        // 在 scopeProducts 的每个 product 上记录本权益
-        array_walk($scopeProducts, function (Product $product) {
-            $product->appendAppliedBenefit($this);
-        });
 
-        $this->setBenefit($newScopeTotalPrice - $scopeTotalPrice);
+        $this->setProfit($newScopeTotalPrice - $scopeTotalPrice);
 
         $this->onApplied($scopeProducts, $newScopeTotalPrice);
         return true;
