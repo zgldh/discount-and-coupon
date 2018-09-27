@@ -40,7 +40,7 @@
     $result->getProfit();                   // final_price 减去 price
     $result->getBenefits();                 // 实际应用的 benefits， 内含每个 benefit 提供了多少 profit。
 
-    foreach($result->getProducts() as $product) // 所有享受到权益的货物数组，每个元素对应一个货物
+    foreach($result->getProducts() as $product) // 最终的货物集合，每个元素对应一个货物
     {
         $product->getSku();                     // 该货物 SKU
         $product->getPrice();                   // 货物原价
@@ -190,13 +190,13 @@ use zgldh\DiscountAndCoupon\Benefit;
 
 class FlatDeduction extends Benefit{
     protected $priority = 0;    // 优先级
-
-    private $deduction = 0;
-    private $couponId = null;
+    protected $deduction = 0;
+    protected $couponId = null;
+    protected $groupMaxApplyTime = 2; // 最多可以同时用两张代金券
 
     protected function newScopePrice($scopeProducts, $scopeTotalPrice)
     {
-        return $scopeTotalPrice - $this->deduction;
+        return max(0, $scopeTotalPrice - $this->deduction);
     }
 }
 
