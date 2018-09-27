@@ -4,17 +4,15 @@
 [![Build Status](https://travis-ci.com/zgldh/discount-and-coupon.svg?branch=master)](https://travis-ci.com/zgldh/discount-and-coupon)
 
 ## 定义
-1. discount 折扣活动，通常用于店铺对所有消费者的活动。
-2. coupon   优惠券，通常属于一个特定的消费者的特权。
+1. 折扣活动，通常用于店铺对所有消费者的活动。
+2. 优惠券，通常属于一个特定的消费者的特权。
 3. 以上两者在下文统称“benefit 权益”
-4. `zgldh\DiscountAndCoupon\Discounts\Discount::class` 是折扣活动的基类，用于定义一系列折扣活动的类型。注意是折扣活动类型而不是实例。
-5. `zgldh\DiscountAndCoupon\Coupons\Coupon::class` 是优惠券的基类，同上。
+4. `zgldh\DiscountAndCoupon\Benefit::class` 是可享用的权益的基类，用于定义一系列折扣活动、优惠券的类型。注意是定义类型而不是实例。
 6. `priority` 表示该权益的判断优先级，数值越高越优先判断。
 
 ## 功能
-1. 输入“折扣活动(discount)”，“优惠券(coupon)”和一些货品，即可计算出最终价格。
-2. TODO 可以得出每一个货品参与了哪些 权益。
-3. TODO 提供各个权益的 before 和 after 回调。before 可以返回 boolean 值来决定是否应用该权益，after 处理应用了权益的后续操作。
+1. 输入“权益(benefit)”和一些货品，即可计算出最终价格。
+2. 可以得出每一个货品参与了哪些 权益。
 
 ## 用法
 
@@ -24,8 +22,7 @@
 
     $calculator = new Calculator();         // 初始化计算器
     $result = $calculator
-        ->setDiscounts($discountCollection) // 设置打算应用的 discounts  可选 Optional
-        ->setCoupons($couponCollection)     // 设置打算使用的 coupons    可选 Optional
+        ->setBenefits($discountCollection)  // 设置打算应用的 Benefit  可选 Optional
         ->setProducts([                      // 设置要买的货物            必填
             [
                 'sku'       => 123,         // 货物 SKU 或 ID   必填
@@ -41,8 +38,7 @@
     $result->getPrice();                    // 原始总价， 两位小数
     $result->getFinalPrice();               // 最终总价， 两位小数
     $result->getProfit();                   // final_price 减去 price
-    $result->getDiscounts();                // 实际应用的 discounts， 内含每个 discount 提供了多少 profit。
-    $result->getCoupons();                  // 实际应用的 coupons， 内含每个 coupon 提供了多少 profit。
+    $result->getBenefits();                 // 实际应用的 benefits， 内含每个 benefit 提供了多少 profit。
 
     foreach($result->getProducts() as $product) // 所有享受到权益的货物数组，每个元素对应一个货物
     {
@@ -52,8 +48,7 @@
         $product->getCategory();                // 货物分类 ID
         $product->getName();                    // 货物名字
         $product->foo;                          // 其他参数
-        $product->getDiscounts();               // 该货物应用的 discounts
-        $product->getCoupons();                 // 该货物应用的 coupons
+        $product->getBenefits();                // 该货物应用的 benefits
     }
 
 ```
@@ -62,9 +57,9 @@
 
 #### 1. 定义店铺的“满减活动”：
 ```php
-use zgldh\DiscountAndCoupon\Discounts\Discount;
+use zgldh\DiscountAndCoupon\Benefit;
 
-class FlatDiscountWhenPurchaseExceed extends Discount{
+class FlatDiscountWhenPurchaseExceed extends Benefit{
     private $above = null;      // 满多少钱
     private $deduction = null;  // 减多少钱
 
@@ -98,11 +93,11 @@ $d30a100 = new FlatDiscountWhenPurchaseExceed(['above'=>100,'deduction'=>30,'pri
 #### 2. 定义店铺的“迎中秋早餐8折”活动，不与其他活动同享：
 
 ```php
-use zgldh\DiscountAndCoupon\Discounts\Discount;
+use zgldh\DiscountAndCoupon\Benefit;
 
 const CATEGORY_BREAKFAST = 'breakfast';
 
-class MidAutumnDayBreakfast80Discount extends Discount{
+class MidAutumnDayBreakfast80Discount extends Benefit{
     protected $priority = 200;    // 优先级
 
     protected $exclusive = true;  // 不与其他活动同享
@@ -125,11 +120,11 @@ $midAutumnDayDiscountEvent = new MidAutumnDayBreakfast80Discount();
 下列代码是以减价实现本促销活动，会影响本次订单最终价格。
 
 ```php
-use zgldh\DiscountAndCoupon\Discounts\Discount;
+use zgldh\DiscountAndCoupon\Benefit;
 
 const SKU_YOGURT = 'yogurt';
 
-class YogurtBuyOneGetOne extends Discount{
+class YogurtBuyOneGetOne extends Benefit{
     protected $priority = 500;    // 优先级
 
     protected $exclusive = true;  // 不与其他活动同享
@@ -153,12 +148,12 @@ $yogurtPromotion = new YogurtBuyOneGetOne();
 下列代码是以赠送货品实现促销活动，不会影响本次订单最终价格，但会增加商品。
 
 ```php
-use zgldh\DiscountAndCoupon\Discounts\Discount;
+use zgldh\DiscountAndCoupon\Benefit;
 use zgldh\DiscountAndCoupon\Product;
 
 const SKU_YOGURT = 'yogurt';
 
-class YogurtBuyOneGetOne extends Discount{
+class YogurtBuyOneGetOne extends Benefit{
     protected $priority = 500;    // 优先级
 
     protected $exclusive = true;  // 不与其他活动同享
@@ -186,12 +181,14 @@ $yogurtPromotion = new YogurtBuyOneGetOne();
 
 ### 如何定义优惠券 Coupon
 
+其实优惠券和折扣活动逻辑上没有区别，请在您具体的业务代码里，删掉使用过的优惠券。
+
 #### 1. 定义代金券
 
 ```php
-use zgldh\DiscountAndCoupon\Coupons\Coupon;
+use zgldh\DiscountAndCoupon\Benefit;
 
-class FlatDeduction extends Coupon{
+class FlatDeduction extends Benefit{
     protected $priority = 0;    // 优先级
 
     private $deduction = 0;
@@ -200,13 +197,6 @@ class FlatDeduction extends Coupon{
     protected function newScopePrice($scopeProducts, $scopeTotalPrice)
     {
         return $scopeTotalPrice - $this->deduction;
-    }
-
-    protected function onApplied($scopeProducts)
-    {
-        // 如果这个 coupon 只能用一次，则删除这个 coupon 记录
-        // 如 DB::table('coupons')->where('id',$this->couponId)->delete();
-        // 或者修改 coupon 记录的剩余使用次数等等
     }
 }
 
@@ -220,12 +210,12 @@ $flatDeduction50= new FlatDeduction([ 'deduction'=>50, 'coupon_id'=>125 ]); // 5
 能把订单内的某种饮料的一件商品替换成更贵的饮料。 本质是替换商品，所以你可以任意定义规则。
 
 ```php
-use zgldh\DiscountAndCoupon\Coupons\Coupon;
+use zgldh\DiscountAndCoupon\Benefit;
 
 const SMALL_COKE = 'small-coke';
 const BIG_COKE = 'big-coke';
 
-class UpgradeBeverage extends Coupon{
+class UpgradeBeverage extends Benefit{
     protected $priority = 500;    // 优先级
 
     protected function scope(Product $product){
@@ -241,13 +231,6 @@ class UpgradeBeverage extends Coupon{
             $firstCoke['name'] = 'Big Coke';
         }
         return $scopeProducts;
-    }
-
-    protected function onApplied($scopeProducts)
-    {
-        // 如果这个 coupon 只能用一次，则删除这个 coupon 记录
-        // 如 DB::table('coupons')->where('id',$this->couponId)->delete();
-        // 或者修改 coupon 记录的剩余使用次数等等
     }
 }
 ```

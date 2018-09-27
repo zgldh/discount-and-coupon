@@ -8,21 +8,13 @@
 
 namespace zgldh\DiscountAndCoupon;
 
-use zgldh\DiscountAndCoupon\Coupons\Coupon;
-use zgldh\DiscountAndCoupon\Coupons\CouponCollection;
-use zgldh\DiscountAndCoupon\Discounts\Discount;
-use zgldh\DiscountAndCoupon\Discounts\DiscountCollection;
-
 class Calculator
 {
     /**
-     * @var DiscountCollection
+     * @var BenefitCollection
      */
-    private $discounts = null;
-    /**
-     * @var CouponCollection
-     */
-    private $coupons = null;
+    private $benefits = null;
+
     /**
      * Other parameters
      * @var array
@@ -36,88 +28,47 @@ class Calculator
 
     public function __construct()
     {
-        $this->discounts = new DiscountCollection();
-        $this->coupons = new CouponCollection();
+        $this->benefits = new BenefitCollection();
     }
 
     /**
-     * @param Coupon $coupon
+     * @param Benefit $benefit
      * @return Calculator
      */
-    public function setCoupon(Coupon $coupon): Calculator
+    public function setBenefit(Benefit $benefit): Calculator
     {
-        $this->coupons = new CouponCollection();
-        $this->coupons->appendCoupon($coupon);
+        $this->benefits = new BenefitCollection();
+        $this->benefits->appendBenefit($benefit);
         return $this;
     }
 
     /**
-     * @param Discount $discount
+     * @param BenefitCollection|array $benefitCollection
      * @return Calculator
      */
-    public function setDiscount(Discount $discount): Calculator
+    public function setBenefits($benefitCollection): Calculator
     {
-        $this->discounts = new DiscountCollection();
-        $this->discounts->appendDiscount($discount);
+        $this->benefits = is_a($benefitCollection,
+            BenefitCollection::class) ? $benefitCollection : new BenefitCollection($benefitCollection);
         return $this;
     }
 
     /**
-     * @param CouponCollection|array $couponCollection
+     * @param Benefit $benefit
      * @return Calculator
      */
-    public function setCoupons($couponCollection): Calculator
+    public function appendBenefit(Benefit $benefit): Calculator
     {
-        $this->coupons = is_a($couponCollection,
-            CouponCollection::class) ? $couponCollection : new CouponCollection($couponCollection);
+        $this->benefits->appendBenefit($benefit);
         return $this;
     }
 
     /**
-     * @param DiscountCollection|array $discountCollection
-     * @return Calculator
+     * @return BenefitCollection
      */
-    public function setDiscounts($discountCollection): Calculator
+    public function getBenefits(): BenefitCollection
     {
-        $this->discounts = is_a($discountCollection,
-            DiscountCollection::class) ? $discountCollection : new DiscountCollection($discountCollection);
-        return $this;
-    }
-
-    /**
-     * @param Discount $discount
-     * @return Calculator
-     */
-    public function appendDiscount(Discount $discount): Calculator
-    {
-        $this->discounts->appendDiscount($discount);
-        return $this;
-    }
-
-    /**
-     * @param Coupon $coupon
-     * @return $this
-     */
-    public function appendCoupon(Coupon $coupon): Calculator
-    {
-        $this->coupons->appendCoupon($coupon);
-        return $this;
-    }
-
-    /**
-     * @return DiscountCollection
-     */
-    public function getDiscounts(): DiscountCollection
-    {
-        return $this->discounts;
-    }
-
-    /**
-     * @return CouponCollection
-     */
-    public function getCoupons(): CouponCollection
-    {
-        return $this->coupons;
+        return $this->benefits;
     }
 
     public function setProducts($products): Calculator
@@ -153,7 +104,7 @@ class Calculator
      */
     public function calculate(): Result
     {
-        $benefits = $this->getBenefits();
+        $benefits = $this->getOrderedBenefits();
         /** @var Benefit $benefit */
         foreach ($benefits as $benefit) {
             $benefit->attempt($this->products);
@@ -167,8 +118,7 @@ class Calculator
         $result = new Result();
         $result->setPrice($this->products->getPrice());
         $result->setFinalPrice($this->products->getFinalPrice());
-        $result->setDiscounts($this->discounts->getApplied());
-        $result->setCoupons($this->coupons->getApplied());
+        $result->setBenefits($this->benefits->getApplied());
         $result->setProducts(array_filter($this->products->getArrayCopy(), function (Product $product) {
             return $product->isAppliedBenefit();
         }));
@@ -180,15 +130,9 @@ class Calculator
      * 并且 priority 大的，排在最前面
      * @return array
      */
-    private function getBenefits()
+    private function getOrderedBenefits()
     {
-        $benefits = [];
-        foreach ($this->discounts as $discount) {
-            $benefits[] = $discount;
-        }
-        foreach ($this->coupons as $coupon) {
-            $benefits[] = $coupon;
-        }
+        $benefits = $this->getBenefits()->getArrayCopy();
         usort($benefits, function (Benefit $a, Benefit $b) {
             $priorityA = $a->getPriority();
             $priorityB = $b->getPriority();

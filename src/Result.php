@@ -14,8 +14,7 @@ class Result
     private $final_price = 0.0;
     private $price = 0.0;
     private $profit = 0.0;
-    private $discounts = [];
-    private $coupons = [];
+    private $benefits = [];
     private $products = null;
 
     /**
@@ -75,39 +74,21 @@ class Result
     }
 
     /**
-     * @param array $discounts
+     * @param array $benefits
      * @return Result
      */
-    public function setDiscounts(array $discounts): Result
+    public function setBenefits(array $benefits): Result
     {
-        $this->discounts = $discounts;
+        $this->benefits = $benefits;
         return $this;
     }
 
     /**
      * @return array
      */
-    public function getDiscounts(): array
+    public function getBenefits(): array
     {
-        return $this->discounts;
-    }
-
-    /**
-     * @param array $coupons
-     * @return Result
-     */
-    public function setCoupons(array $coupons): Result
-    {
-        $this->coupons = $coupons;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCoupons(): array
-    {
-        return $this->coupons;
+        return $this->benefits;
     }
 
     /**

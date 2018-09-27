@@ -17,7 +17,6 @@ class BenefitCollection extends \ArrayObject
     }
 
     /**
-     * TODO
      * @return array
      */
     public function getApplied()

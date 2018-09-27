@@ -152,17 +152,6 @@ class Benefit
     }
 
     /**
-     * 当本权益真的被应用时调用。
-     * 请在子类重写本函数
-     * @param $scopeProducts
-     * @param $newScopeTotalPrice
-     */
-    protected function onApplied($scopeProducts, $newScopeTotalPrice)
-    {
-
-    }
-
-    /**
      * 更新 products 的 final price
      * @param $scopeProducts
      * @param $scopeTotalPrice
@@ -236,7 +225,6 @@ class Benefit
 
         $this->setProfit($newScopeTotalPrice - $scopeTotalPrice);
 
-        $this->onApplied($scopeProducts, $newScopeTotalPrice);
         return true;
     }
 

@@ -2,9 +2,8 @@
 
 namespace zgldh\DiscountAndCoupon\Test;
 
+use zgldh\DiscountAndCoupon\Benefit;
 use zgldh\DiscountAndCoupon\Calculator;
-use zgldh\DiscountAndCoupon\Discounts\Discount;
-use zgldh\DiscountAndCoupon\Discounts\FlatDiscountWhenPurchaseExceed;
 use zgldh\DiscountAndCoupon\Product;
 
 class DiscountTest extends BasicTestCase
@@ -21,7 +20,7 @@ class DiscountTest extends BasicTestCase
 
         $calculator = new Calculator();         // 初始化计算器
         $result = $calculator
-            ->setDiscounts([
+            ->setBenefits([
                 $d2a20,
                 $d10a50,
                 $d30a100
@@ -43,7 +42,7 @@ class DiscountTest extends BasicTestCase
 
         $calculator = new Calculator();         // 初始化计算器
         $result = $calculator
-            ->setDiscount($discount)
+            ->setBenefit($discount)
             ->setProducts([                     // 设置要买的货物            必填
                 $this->product(['price' => 2.8, 'category' => 'breakfast']),
                 $this->product(['price' => 20, 'category' => 'breakfast']),
@@ -60,7 +59,7 @@ class DiscountTest extends BasicTestCase
 
         $calculator = new Calculator();         // 初始化计算器
         $result = $calculator
-            ->setDiscount($discount)
+            ->setBenefit($discount)
             ->setProducts([                     // 设置要买的货物            必填
                 $this->product(['price' => 5, 'sku' => 'yogurt']),
                 $this->product(['price' => 8, 'sku' => 'bread'])
@@ -70,7 +69,7 @@ class DiscountTest extends BasicTestCase
         $this->assertEquals(5 + 8, $result->getFinalPrice());
 
         $result = $calculator
-            ->setDiscount($discount)
+            ->setBenefit($discount)
             ->setProducts([                     // 设置要买的货物            必填
                 $this->product(['price' => 5, 'sku' => 'yogurt']),
                 $this->product(['price' => 5, 'sku' => 'yogurt']),
@@ -81,7 +80,7 @@ class DiscountTest extends BasicTestCase
         $this->assertEquals(5 + 0 + 8, $result->getFinalPrice());
 
         $result = $calculator
-            ->setDiscount($discount)
+            ->setBenefit($discount)
             ->setProducts([                     // 设置要买的货物            必填
                 $this->product(['price' => 5, 'sku' => 'yogurt']),
                 $this->product(['price' => 5, 'sku' => 'yogurt']),
@@ -99,7 +98,7 @@ class DiscountTest extends BasicTestCase
 
         $calculator = new Calculator();         // 初始化计算器
         $result = $calculator
-            ->setDiscount($discount)
+            ->setBenefit($discount)
             ->setProducts([                     // 设置要买的货物            必填
                 $this->product(['price' => 5, 'sku' => 'yogurt']),
                 $this->product(['price' => 8, 'sku' => 'bread'])
@@ -112,7 +111,7 @@ class DiscountTest extends BasicTestCase
         $this->assertEquals(2, sizeof($products));
 
         $result = $calculator
-            ->setDiscount($discount)
+            ->setBenefit($discount)
             ->setProducts([                     // 设置要买的货物            必填
                 $this->product(['price' => 5, 'sku' => 'yogurt']),
                 $this->product(['price' => 5, 'sku' => 'yogurt']),
@@ -127,8 +126,25 @@ class DiscountTest extends BasicTestCase
     }
 }
 
+class FlatDiscountWhenPurchaseExceed extends Benefit
+{
+    protected $above = null;      // 满多少钱
+    protected $deduction = null;  // 减多少钱
 
-class Breakfast80Discount extends Discount
+    protected $priority = 100;    // 默认优先级
+
+    protected function isScopeQualified($scopeProducts, $scopeTotalPrice)
+    {
+        return $scopeTotalPrice >= $this->above;
+    }
+
+    protected function newScopePrice($scopeProducts, $scopeTotalPrice)
+    {
+        return $scopeTotalPrice - $this->deduction;
+    }
+}
+
+class Breakfast80Discount extends Benefit
 {
     protected $priority = 200;    // 优先级
 
@@ -145,7 +161,7 @@ class Breakfast80Discount extends Discount
     }
 }
 
-class BuyOneFreeOne extends Discount
+class BuyOneFreeOne extends Benefit
 {
     protected $priority = 500;    // 优先级
 
@@ -165,7 +181,7 @@ class BuyOneFreeOne extends Discount
     }
 }
 
-class BuyOneGetOne extends Discount
+class BuyOneGetOne extends Benefit
 {
     protected $priority = 500;    // 优先级
 
