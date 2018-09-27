@@ -119,9 +119,7 @@ class Calculator
         $result->setPrice($this->products->getPrice());
         $result->setFinalPrice($this->products->getFinalPrice());
         $result->setBenefits($this->benefits->getApplied());
-        $result->setProducts(array_filter($this->products->getArrayCopy(), function (Product $product) {
-            return $product->isAppliedBenefit();
-        }));
+        $result->setProducts($this->products->getArrayCopy());
         return $result;
     }
 

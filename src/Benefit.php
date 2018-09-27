@@ -32,6 +32,7 @@ class Benefit
 
     /**
      * 最多允许同一个权益组内的权益一共被应用几次。比如一系列满减活动可以属于同一个权益组，且最多被应用一次。
+     * -1 为无限次
      * @var int
      */
     protected $groupMaxApplyTime = 1;
@@ -247,7 +248,7 @@ class Benefit
             if ($this->exclusive && $product->isAppliedBenefit()) {
                 continue;
             }
-            if ($product->getGroupAppliedTimes($this->getGroup()) >= $this->groupMaxApplyTime) {
+            if ($this->groupMaxApplyTime !== -1 && $product->getGroupAppliedTimes($this->getGroup()) >= $this->groupMaxApplyTime) {
                 continue;
             }
             array_push($filteredProducts, $product);
