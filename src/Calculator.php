@@ -73,7 +73,11 @@ class Calculator
 
     public function setProducts($products): Calculator
     {
-        $this->products = new ProductCollection($products);
+        if (is_a($products, ProductCollection::class)) {
+            $this->products = $products;
+        } else {
+            $this->products = new ProductCollection($products);
+        }
         return $this;
     }
 
