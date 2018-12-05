@@ -49,6 +49,12 @@ class Benefit
      */
     private $profit = 0.0;
 
+    /**
+     * 其他参数
+     * @var array
+     */
+    private $properties = [];
+
 
     public function __construct($parameters = [])
     {
@@ -56,6 +62,24 @@ class Benefit
             if (property_exists($this, $key)) {
                 $this->$key = $val;
             }
+        }
+        $this->properties = $parameters;
+    }
+
+    public function __get($name)
+    {
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
+        return @$this->properties[$name];
+    }
+
+    public function __set($name, $value)
+    {
+        if (property_exists($this, $name)) {
+            $this->$name = $value;
+        } else {
+            $this->properties[$name] = $value;
         }
     }
 

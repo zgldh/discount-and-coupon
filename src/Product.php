@@ -8,9 +8,6 @@
 
 namespace zgldh\DiscountAndCoupon;
 
-use zgldh\DiscountAndCoupon\Coupons\Coupon;
-use zgldh\DiscountAndCoupon\Discounts\Discount;
-
 
 /**
  * Class Product
@@ -91,7 +88,7 @@ class Product
     /**
      * @return float
      */
-    public function getPrice(): float
+    public function getPrice()
     {
         return $this->price;
     }
@@ -99,7 +96,7 @@ class Product
     /**
      * @param float $price
      */
-    public function setPrice(float $price)
+    public function setPrice($price)
     {
         $this->price = $price;
     }
@@ -107,7 +104,7 @@ class Product
     /**
      * @return mixed|null
      */
-    public function getSku(): mixed
+    public function getSku()
     {
         return $this->sku;
     }
@@ -115,7 +112,7 @@ class Product
     /**
      * @param mixed|null $sku
      */
-    public function setSku(mixed $sku)
+    public function setSku($sku)
     {
         $this->sku = $sku;
     }
@@ -123,7 +120,7 @@ class Product
     /**
      * @return mixed|null
      */
-    public function getCategory(): mixed
+    public function getCategory()
     {
         return $this->category;
     }
@@ -131,7 +128,7 @@ class Product
     /**
      * @param mixed|null $category
      */
-    public function setCategory(mixed $category)
+    public function setCategory($category)
     {
         $this->category = $category;
     }
@@ -139,7 +136,7 @@ class Product
     /**
      * @return mixed|null
      */
-    public function getName(): mixed
+    public function getName()
     {
         return $this->name;
     }
@@ -147,7 +144,7 @@ class Product
     /**
      * @param mixed|null $name
      */
-    public function setName(mixed $name)
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -155,7 +152,7 @@ class Product
     /**
      * @return float
      */
-    public function getFinalPrice(): float
+    public function getFinalPrice()
     {
         return $this->final_price;
     }
@@ -163,29 +160,9 @@ class Product
     /**
      * @param float $final_price
      */
-    public function setFinalPrice(float $final_price)
+    public function setFinalPrice($final_price)
     {
         $this->final_price = $final_price;
-    }
-
-    /**
-     * @return array
-     */
-    public function getDiscounts(): array
-    {
-        return array_filter($this->getAppliedBenefits(), function ($benefit) {
-            return is_a($benefit, Discount::class);
-        });
-    }
-
-    /**
-     * @return array
-     */
-    public function getCoupons(): array
-    {
-        return array_filter($this->getAppliedBenefits(), function ($benefit) {
-            return is_a($benefit, Coupon::class);
-        });
     }
 
     /**
