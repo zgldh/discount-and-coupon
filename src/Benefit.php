@@ -258,7 +258,7 @@ class Benefit
      * @param ProductCollection $productCollection
      * @return array
      */
-    private function filterScopeProducts(ProductCollection $productCollection)
+    public function filterScopeProducts(ProductCollection $productCollection)
     {
         $filteredProducts = [];
         $productArray = array_values($productCollection->getArrayCopy());
