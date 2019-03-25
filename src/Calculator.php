@@ -200,11 +200,19 @@ class Calculator
     }
 
     /**
-     * @param array $beforeAttemptHandlers
+     * @param array $beforeAttemptHandler
      */
-    public function setBeforeAttemptHandler($beforeAttemptHandler)
+    public function addBeforeAttemptHandler($beforeAttemptHandler)
     {
         $this->beforeAttemptHandlers[] = $beforeAttemptHandler;
+    }
+
+    /**
+     * @return void
+     */
+    public function cleanBeforeAttemptHandlers()
+    {
+        $this->beforeAttemptHandlers = [];
     }
 
     /**
@@ -216,10 +224,18 @@ class Calculator
     }
 
     /**
-     * @param array $afterAttemptHandlers
+     * @param array $afterAttemptHandler
      */
-    public function setAfterAttemptHandlers($afterAttemptHandler)
+    public function addAfterAttemptHandler($afterAttemptHandler)
     {
         $this->afterAttemptHandlers[] = $afterAttemptHandler;
+    }
+    
+    /**
+     * @return void
+     */
+    public function cleanAfterAttemptHandlers()
+    {
+        $this->beforeAttemptHandlers = [];
     }
 }
