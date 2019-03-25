@@ -200,7 +200,7 @@ class Calculator
     }
 
     /**
-     * @param array $beforeAttemptHandler
+     * @param $beforeAttemptHandler
      */
     public function addBeforeAttemptHandler($beforeAttemptHandler)
     {
@@ -224,7 +224,7 @@ class Calculator
     }
 
     /**
-     * @param array $afterAttemptHandler
+     * @param $afterAttemptHandler
      */
     public function addAfterAttemptHandler($afterAttemptHandler)
     {
