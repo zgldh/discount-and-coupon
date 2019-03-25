@@ -111,6 +111,7 @@ class Calculator
         $benefits = $this->getOrderedBenefits();
         /** @var Benefit $benefit */
         foreach ($benefits as $benefit) {
+            $this->setProducts($benefit->normalizeProducts($this->products));
             $benefit->attempt($this->products);
             $this->products->normalize();
         }
