@@ -26,6 +26,18 @@ class Calculator
      */
     private $products = null;
 
+    /*
+     * Handler functions before attempt
+     * @var array
+     * */
+    private $beforeAttemptHandlers = [];
+
+    /*
+     * Handler functions after attempt
+     * @var array
+     * */
+    private $afterAttemptHandlers = [];
+
     public function __construct()
     {
         $this->benefits = new BenefitCollection();
@@ -71,6 +83,10 @@ class Calculator
         return $this->benefits;
     }
 
+    /**
+     * @param ProductCollection
+     * @return Calculator
+     */
     public function setProducts($products): Calculator
     {
         if (is_a($products, ProductCollection::class)) {
@@ -79,6 +95,14 @@ class Calculator
             $this->products = new ProductCollection($products);
         }
         return $this;
+    }
+
+    /**
+     * @return ProductCollection
+     */
+    public function getProducts(): ProductCollection
+    {
+        return $this->products;
     }
 
     /**
@@ -110,8 +134,10 @@ class Calculator
     {
         $benefits = $this->getOrderedBenefits();
         /** @var Benefit $benefit */
-        foreach ($benefits as $benefit) {
-            $benefit->attempt($this->products);
+        foreach ($benefits as $benefitIndex=>$benefit) {
+            $this->beforeAttempt($benefitIndex, $benefit);
+            $attemptResult = $benefit->attempt($this->products);
+            $this->afterAttempt($benefitIndex, $benefit, $attemptResult);
             $this->products->normalize();
         }
         return $this->getResult();
@@ -141,5 +167,59 @@ class Calculator
             return $priorityB - $priorityA;
         });
         return $benefits;
+    }
+
+    private function beforeAttempt($benefitIndex, $benefit)
+    {
+        foreach($this->beforeAttemptHandlers as $handle)
+        {
+            if(is_callable($handle))
+            {
+                $handle($this, $benefitIndex, $benefit);
+            }
+        }
+    }
+
+    private function afterAttempt($benefitIndex, $benefit, $attemptResult)
+    {
+        foreach($this->afterAttemptHandlers as $handle)
+        {
+            if(is_callable($handle))
+            {
+                $handle($this, $benefitIndex, $benefit,$attemptResult);
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getBeforeAttemptHandlers(): array
+    {
+        return $this->beforeAttemptHandlers;
+    }
+
+    /**
+     * @param array $beforeAttemptHandlers
+     */
+    public function setBeforeAttemptHandler($beforeAttemptHandler)
+    {
+        $this->beforeAttemptHandlers[] = $beforeAttemptHandler;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAfterAttemptHandlers(): array
+    {
+        return $this->afterAttemptHandlers;
+    }
+
+    /**
+     * @param array $afterAttemptHandlers
+     */
+    public function setAfterAttemptHandlers($afterAttemptHandler)
+    {
+        $this->afterAttemptHandlers[] = $afterAttemptHandler;
     }
 }
