@@ -280,14 +280,4 @@ class Benefit
         }
         return $filteredProducts;
     }
-
-    /**
-     * 每次 Benefit 计算优惠前处理对应的 products
-     * @param ProductCollection $products
-     * @return ProductCollection
-     */
-    public function normalizeProducts (ProductCollection $products)
-    {
-        return $products;
-    }
 }
